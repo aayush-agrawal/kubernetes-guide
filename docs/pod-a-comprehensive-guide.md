@@ -1,4 +1,8 @@
-## What is a Pod?
+# Kubernetes Pod: A Comprehensive Guide
+
+---
+
+### What is a Pod?
 A Pod is the smallest and simplest Kubernetes object, representing a single instance of a running process in your cluster. It can contain one or more containers that share the same network and storage resources. Pods are typically used to host a single application or group of tightly coupled applications.
 
 ### Key Characteristics of a Pod:
@@ -25,6 +29,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: my-pod
+  labels:
+    app: nginx
 spec:
   containers:
   - name: nginx-container
@@ -68,7 +74,7 @@ The command will interact with the web server running inside the container.
 #### 6. Exposing the Pod to Access It from the Browser
 ##### 1. To access the nginx server from your local machine, expose the Pod:
 ```
-kubectl expose pod tomcat-pod --type=NodePort --port=8080
+kubectl expose pod my-pod --type=NodePort --port=80
 ```
 
 Find the allocated NodePort:
@@ -79,7 +85,7 @@ kubectl get services
 Example output:
 ```
 NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-tomcat-pod   NodePort    10.107.120.231   <none>        8080:32000/TCP   5m
+my-pod   NodePort    10.107.120.231   <none>        8080:32000/TCP   5m
 ```
 
 nginx server is accessible at http://<minikube-ip>:32000
@@ -88,6 +94,16 @@ nginx server is accessible at http://<minikube-ip>:32000
 Get the Minikube IP:
 ```
 minikube ip
+```
+If your service type is NodePort, sometimes it may require minikube tunnel for external access.
+```bash
+minikube tunnel
+```
+This may open up access to the service from your local machine.
+
+You can also minikube provided built-in command to access services
+```bash
+minikube service my-pod
 ```
 
 ##### 3. Access the nginx server by combining the IP and NodePort
@@ -106,13 +122,13 @@ kubectl delete pod my-pod
 
 ### Summary of Key Commands
 
-| Action | Command |
-| ------ | ------- |
-| Create a Pod (imperative) | kubectl run my-pod --image=nginx |
-| Create a Pod (YAML) | kubectl apply -f my-pod.yaml |
-| Get list of Pods | kubectl get pods |
-| Describe a Pod | kubectl describe pod my-pod |
-| Execute command in Pod | kubectl exec -it my-pod -- /bin/bash |
+| Action | Command                                             |
+| ------ |-----------------------------------------------------|
+| Create a Pod (imperative) | kubectl run my-pod --image=nginx                    |
+| Create a Pod (YAML) | kubectl apply -f my-pod.yaml                        |
+| Get list of Pods | kubectl get pods                                    |
+| Describe a Pod | kubectl describe pod my-pod                         |
+| Execute command in Pod | kubectl exec -it my-pod -- /bin/bash                |
 | Curl or Wget within a Pod | curl http://localhost:80 or wget http://localhost:80 |
-| Expose Pod to outside | kubectl expose pod tomcat-pod --type=NodePort --port=8080 |
-| Delete a Pod | kubectl delete pod my-pod |
+| Expose Pod to outside | kubectl expose pod my-pod --type=NodePort --port=80 |
+| Delete a Pod | kubectl delete pod my-pod                           |
